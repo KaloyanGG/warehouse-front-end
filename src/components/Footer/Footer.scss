@@ -1,0 +1,15 @@
+@import url(../../shared.scss);
+
+footer{
+	background-color: #333;
+	color: #fff;
+	text-align: center;
+	// padding: 20px;
+	position: sticky;
+	bottom: 0;
+	// left: 0;
+	width: 100%;
+    height: var(--footer-height);
+
+    // z-index: 1;
+}

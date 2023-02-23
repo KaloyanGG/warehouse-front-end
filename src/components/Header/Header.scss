@@ -1,3 +1,18 @@
-*{
-    color:blue;
+
+header{
+	background-color: #333;
+	color: #fff;
+	text-align: center;
+	// padding: 20px;
+	position: sticky;
+	top: 0;
+	// left: 0;
+	width: 100%;
+    z-index: 10;
+    height: var(--header-height);
+    // transition: height 1s ease-out; 
+}
+
+header.shrink{
+    height: var(--header-height)/2;
 }
