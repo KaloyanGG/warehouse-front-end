@@ -3,11 +3,11 @@ import axios from "axios";
 const baseUrl = "http://localhost:3000";
 
 function getAllProducts() {
-    return axios.get(baseUrl + "/products", {
-        headers: {
-
-        }
-    });
+    return axios.get(baseUrl + "/products");
 }
 
-export { getAllProducts }
+function getProductById(productId: string) {
+    return axios.get(baseUrl + `/products/${productId}`)
+}
+
+export { getAllProducts, getProductById }

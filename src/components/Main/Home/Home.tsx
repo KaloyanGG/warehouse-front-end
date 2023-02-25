@@ -5,19 +5,18 @@ import CssBaseline from '@mui/material/CssBaseline';
 import TextField from '@mui/material/TextField';
 import FormControlLabel from '@mui/material/FormControlLabel';
 import Checkbox from '@mui/material/Checkbox';
-import Link from '@mui/material/Link';
 import Grid from '@mui/material/Grid';
 import Box from '@mui/material/Box';
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import Typography from '@mui/material/Typography';
 import Container from '@mui/material/Container';
-import { createTheme, ThemeProvider } from '@mui/material/styles';
 import { login } from '../../../utils/user-requets';
-import { useSessionStorage } from 'usehooks-ts';
 import { useEffect, useState } from 'react';
 import './Home.scss'
 import { getAllProducts } from '../../../utils/product-requests';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
+import { Link as RouterLink } from "react-router-dom";
+import Link from '@mui/material/Link';
 
 
 // function Copyright(props: any) {
@@ -68,11 +67,7 @@ function WarehouseItems() {
   }, []);
 
   return (
-    // <>
-    //   {items.map((item: any) =>
-    //     <div key={item._id}>{item.name} - {item._id}</div>)
-    //   }
-    // </>
+
     <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
       <Table stickyHeader aria-label="sticky table" >
 
@@ -85,6 +80,7 @@ function WarehouseItems() {
             <TableCell align='right'>Sell price</TableCell>
             <TableCell align='right'>Type</TableCell>
             <TableCell align='right'>Id</TableCell>
+
           </TableRow>
         </TableHead>
 
@@ -98,6 +94,11 @@ function WarehouseItems() {
               <TableCell align="right">{item.sellPrice}</TableCell>
               <TableCell align="right">{item.type}</TableCell>
               <TableCell align="right">{item._id}</TableCell>
+              <TableCell align='right'>
+                <Button variant="outlined" color="success" component={RouterLink} to='/edit'>Редактиране</Button>
+                <Button variant="outlined" color="success" >Изтриване</Button>
+
+              </TableCell>
             </TableRow>
           ))}
         </TableBody>
@@ -181,14 +182,14 @@ function Containerr() {
           </Button>
           <Grid container>
             <Grid item xs>
-              <Link href="#" variant="body2">
+              {/* <Link href="/edit" variant="body2">
                 Forgot password?
-              </Link>
+              </Link> */}
             </Grid>
             <Grid item>
-              <Link href="#" variant="body2">
+              {/* <Link href="#" variant="body2">
                 {"Don't have an account? Register"}
-              </Link>
+              </Link> */}
             </Grid>
           </Grid>
         </Box>
