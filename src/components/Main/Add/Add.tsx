@@ -1,34 +1,30 @@
-import { useEffect, useState } from "react";
-import { useLoaderData, useNavigate, useParams } from "react-router-dom";
-import { getProductById, updateProduct } from "../../../utils/product-requests";
-import { TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Button, makeStyles } from "@mui/material";
-import { type } from "@testing-library/user-event/dist/type";
-import { count } from "console";
-import './Edit.scss';
-import { Type } from "../../../enums/product-type-enum";
-import { Product } from "../../../interfaces/product-interface";
-import productUpdateSchema from "../../../schema/product-update.schema";
-import { ZodError } from "zod";
+import { TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Button } from '@mui/material';
+import { type } from '@testing-library/user-event/dist/type';
+import { count } from 'console';
+import './Add.scss';
+import { useState } from 'react';
+import { Product } from '../../../interfaces/product-interface';
+import { types } from '../../../enums/product-type-enum';
+import { addProduct } from '../../../utils/product-requests';
+import productAddSchema from '../../../schema/product-add.schema';
+import { ZodError } from 'zod';
+import { useNavigate } from 'react-router-dom';
 
-const types = Object.values(Type);
+export default function Add() {
 
-export function Edit() {
-    const product = useLoaderData() as Product;
 
-    const [name, setName] = useState(product.name);
-    const [description, setDescription] = useState(product.description);
-    const [photo, setPhoto] = useState(product.photo);
-    const [buyPrice, setBuyPrice] = useState(product.buyPrice);
-    const [sellPrice, setSellPrice] = useState(product.sellPrice);
-    const [count, setCount] = useState(product.count);
-    const [type, setType] = useState(product.type);
-
+    const [name, setName] = useState('');
+    const [description, setDescription] = useState('');
+    const [photo, setPhoto] = useState('');
+    const [buyPrice, setBuyPrice] = useState(0);
+    const [sellPrice, setSellPrice] = useState(0);
+    const [count, setCount] = useState(0);
+    const [type, setType] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         const data = {
-            _id: product._id,
             name,
             description,
             photo,
@@ -36,23 +32,15 @@ export function Edit() {
             sellPrice: Number(sellPrice),
             count: Number(count),
             type
-        } as Product;
+        } as any;
+
         try {
-            await productUpdateSchema.parseAsync(data);
-            const response = await updateProduct(data);
-            switch (response.status) {
-                case 400:
-                    alert('Invalid product');
-                    break;
-                case 409:
-                    alert('Product with this name already exists');
-                    break;
-                case 500:
-                    alert('Server error');
-                    break;
-                default:
-                    navigate('/');
-                    break;
+            await productAddSchema.parseAsync(data);
+            const response = await addProduct(data);
+            if (response.ok) {
+                navigate('/');
+            } else {
+                console.log(response);
             }
 
         } catch (error: any) {
@@ -62,6 +50,7 @@ export function Edit() {
                 alert(error.message);
             }
         }
+
     };
 
     return (

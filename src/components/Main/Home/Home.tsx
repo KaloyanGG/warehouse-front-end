@@ -13,9 +13,9 @@ import Container from '@mui/material/Container';
 import { login } from '../../../utils/user-requets';
 import { useEffect, useState } from 'react';
 import './Home.scss'
-import { getAllProducts } from '../../../utils/product-requests';
+import { deleteProduct, getAllProducts } from '../../../utils/product-requests';
 import { Paper, Table, TableBody, TableCell, TableContainer, TableHead, TableRow } from '@mui/material';
-import { Link as RouterLink } from "react-router-dom";
+import { Link as RouterLink, useNavigate } from "react-router-dom";
 import Link from '@mui/material/Link';
 
 
@@ -52,7 +52,7 @@ export default function Home() {
 
 function WarehouseItems() {
   const [items, setItems] = useState([]);
-
+  const navigate = useNavigate();
   useEffect(() => {
 
     getAllProducts()
@@ -66,45 +66,56 @@ function WarehouseItems() {
 
   }, []);
 
+  const deleteHandler = async (id: any) => {
+    await deleteProduct(id);
+    //todo: refresh the page??
+    // navigate('/');
+    setItems(items.filter((item: any) => item._id !== id));
+  }
+
   return (
 
-    <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
-      <Table stickyHeader aria-label="sticky table" >
+    <>
+      <Container sx={{ display: 'flex', justifyContent: 'center' }}>
+        <Button onClick={() => navigate('/products/add')} component={RouterLink} to="/products/add" variant="contained">Add new product</Button>
+      </Container>
+      <TableContainer component={Paper} sx={{ maxHeight: 440 }}>
+        <Table stickyHeader aria-label="sticky table">
 
-        <TableHead>
-          <TableRow>
-            <TableCell>Product name</TableCell>
-            <TableCell align='right'>count</TableCell>
-            <TableCell align='right'>Description</TableCell>
-            <TableCell align='right'>Buy price</TableCell>
-            <TableCell align='right'>Sell price</TableCell>
-            <TableCell align='right'>Type</TableCell>
-            <TableCell align='right'>Id</TableCell>
+          <TableHead>
+            <TableRow>
+              <TableCell>Product name</TableCell>
+              <TableCell align='right'>count</TableCell>
+              <TableCell align='right'>Description</TableCell>
+              <TableCell align='right'>Buy price</TableCell>
+              <TableCell align='right'>Sell price</TableCell>
+              <TableCell align='right'>Type</TableCell>
+              <TableCell align='right'>Id</TableCell>
 
-          </TableRow>
-        </TableHead>
-
-        <TableBody>
-          {items.map((item: any) => (
-            <TableRow key={item._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-              <TableCell component="th" scope="row">{item.name}</TableCell>
-              <TableCell align="right">{item.count}</TableCell>
-              <TableCell align="right">{item.description}</TableCell>
-              <TableCell align="right">{item.buyPrice}</TableCell>
-              <TableCell align="right">{item.sellPrice}</TableCell>
-              <TableCell align="right">{item.type}</TableCell>
-              <TableCell align="right">{item._id}</TableCell>
-              <TableCell align='right'>
-                <Button variant="outlined" color="success" component={RouterLink} to='/edit'>Редактиране</Button>
-                <Button variant="outlined" color="success" >Изтриване</Button>
-
-              </TableCell>
             </TableRow>
-          ))}
-        </TableBody>
+          </TableHead>
 
-      </Table>
-    </TableContainer>
+          <TableBody>
+            {items.map((item: any) => (
+              <TableRow key={item._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                <TableCell component="th" scope="row">{item.name}</TableCell>
+                <TableCell align="right">{item.count}</TableCell>
+                <TableCell align="right">{item.description}</TableCell>
+                <TableCell align="right">{item.buyPrice}</TableCell>
+                <TableCell align="right">{item.sellPrice}</TableCell>
+                <TableCell align="right">{item.type}</TableCell>
+                <TableCell align="right">{item._id}</TableCell>
+                <TableCell align='right'>
+                  <Button variant="outlined" color="success" component={RouterLink} to={`/edit/${item._id}`}>Редактиране</Button>
+                  <Button onClick={() => deleteHandler(item._id)} variant="outlined" color="success">Изтриване</Button>
+
+                </TableCell>
+              </TableRow>
+            ))}
+          </TableBody>
+
+        </Table>
+      </TableContainer></>
 
 
   )
