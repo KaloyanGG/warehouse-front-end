@@ -42,4 +42,11 @@ async function whoAmI() {
     }
 }
 
-export { getAllUsers, login, register, whoAmI }
+async function logout() {
+    return await fetch(baseUrl + "/auth/logout", {
+        method: "POST",
+        credentials: "include",
+    });
+}
+
+export { logout, getAllUsers, login, register, whoAmI }

@@ -4,6 +4,8 @@ import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { UserContext } from "../../../../context/UserContext";
 import { useContext } from "react";
 import { useNavigate } from "react-router-dom";
+import { ZodError } from "zod";
+import { userLoginSchema } from "../../../../schema/user-login.schema";
 
 
 export const Login = () => {
@@ -14,32 +16,34 @@ export const Login = () => {
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
-        const data = new FormData(event.currentTarget);
+        const formData = new FormData(event.currentTarget);
 
         try {
             //TODO: schema!
-            await login({ username: data.get("username") as string, password: data.get("password") as string });
+            const data = {
+                username: formData.get("username") as string,
+                password: formData.get("password") as string,
+            };
+            await userLoginSchema.parseAsync(data);
+            await login(data);
             alert("Logged in");
-            // console.log(data.get("username"));
-            userLogin({ username: data.get("username") as string });
+            userLogin({ username: data.username });
 
-            // Does not happen in time:
-            // console.log(currentUser);
         } catch (e: any) {
-            if (e.response.status === 401) {
+            if (e instanceof ZodError) {
+                alert(e.errors[0].message);
+            }
+            else if (e.response.status === 401) {
                 alert("Invalid credentials");
             } else {
                 console.log(e.response.status);
-
                 alert("Unhandled error");
             }
         }
-
     };
 
     return (
         <Container sx={{ height: 1 }}>
-            <h2>{currentUser}</h2>
             <CssBaseline />
             <Box
                 sx={{

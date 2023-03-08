@@ -1,9 +1,9 @@
 import './Footer.scss'
 
-export function Footer()  {
+export function Footer() {
   return (
     <footer>
-      Footer broo!
+      Footer
     </footer>
   );
 }

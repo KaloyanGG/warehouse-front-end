@@ -2,18 +2,24 @@ import { useState, useEffect, useContext } from 'react';
 import './Header.scss'
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
-
+import { logout as logoutFn } from '../../utils/user-requets';
 export function Header() {
 
-  const { currentUser } = useContext(UserContext);
+  const { currentUser, userLogout } = useContext(UserContext);
+
+  function logout() {
+    userLogout();
+    logoutFn();
+  }
 
   return (
     <header>
       <nav>
         <ul>
-          <li><Link to="/">Home</Link></li>
-          <li><Link to="/register">Register</Link></li>
-          <li><h1>Hello, {currentUser ? currentUser.username : 'guest'}</h1></li>
+          <li><button className='nav-link'><Link to="/">Home</Link></button></li>
+          <li><button className='nav-link'><Link to="/register">Register</Link></button></li>
+          <li><button className='nav-link' onClick={logout}>Logout</button></li>
+          <li className='hello'><h4>Hello, {currentUser ? currentUser.username : 'guest'}</h4></li>
         </ul>
       </nav>
 

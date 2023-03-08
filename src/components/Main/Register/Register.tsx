@@ -6,8 +6,6 @@ import { useNavigate } from 'react-router-dom';
 import userRegisterSchema from '../../../schema/user-register.schema';
 import { ZodError } from 'zod';
 
-
-
 export function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
@@ -48,7 +46,6 @@ export function Register() {
         }
     };
 
-
     return (
         <form onSubmit={handleSubmit}>
             <Typography variant="h4">Register</Typography>
@@ -63,6 +60,7 @@ export function Register() {
                 fullWidth={true}
                 sx={{ m: 1 }}
                 required
+                autoFocus
             />
             <TextField
                 name='password'
