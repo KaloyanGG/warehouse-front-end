@@ -7,8 +7,6 @@ function getAllProducts() {
     return axios.get(baseUrl + "/products");
 }
 
-
-
 async function getProductById(productId: string) {
 
     try {
@@ -49,7 +47,9 @@ async function deleteProduct(productId: string) {
 
     return await fetch(baseUrl + `/products/?id=${productId}`, {
         method: "DELETE",
+        credentials: "include",
     });
+
 
 }
 

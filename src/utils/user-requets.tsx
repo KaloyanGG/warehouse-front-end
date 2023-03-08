@@ -25,4 +25,21 @@ async function register({ username, password, repeatPassword }: { username: stri
 
 }
 
-export { getAllUsers, login, register }
+
+async function whoAmI() {
+    try {
+        const response = await fetch('http://localhost:3000/me',
+            {
+                credentials: 'include'
+            });
+        if (response.status === 401) {
+            return null;
+        }
+        const data = await response.json();
+        return data;
+    } catch (e: any) {
+        throw new Error(e);
+    }
+}
+
+export { getAllUsers, login, register, whoAmI }

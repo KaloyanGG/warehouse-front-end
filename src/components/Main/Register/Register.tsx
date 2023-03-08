@@ -58,7 +58,7 @@ export function Register() {
                 value={username}
                 onChange={(event) => {
                     setUsername(event.target.value);
-                    console.log(username);
+                    // console.log(username);
                 }}
                 fullWidth={true}
                 sx={{ m: 1 }}
