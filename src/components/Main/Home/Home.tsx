@@ -22,11 +22,11 @@ import { UserContext } from '../../../context/UserContext';
 export default function Home() {
 
   // const [value, setValue] = useState(false);
-  const value = useContext(UserContext);
+  const { currentUser } = useContext(UserContext);
 
   return (
     <>
-      {value
+      {currentUser
         ? <WarehouseItems />
         : <Login />}
     </>

@@ -5,25 +5,27 @@ import Home from "./components/Main/Home/Home";
 import { Edit } from "./components/Main/Edit/Edit";
 import Add from "./components/Main/Add/Add";
 import { Root } from "./Root";
-import { UserContext } from "./context/UserContext";
-import { useEffect, useState } from "react";
+import { createContext, useEffect, useState } from "react";
 import { Error as ErrorComponent } from "./components/Error/Error";
 import { whoAmI } from "./utils/user-requets";
+import { UserContext } from "./context/UserContext";
 
 //? on login -> set user in https://redux.js.org/api/store || use context because 
 // make Router component, with the router provider and the router, and in it: determine the user routes and anonymous routes,
 // with logic: session api call, determining wether the user is logged in or not, and then rendering the routes accordingly and
 // setting the user in the context
+const CurrentUserContext = createContext(null);
 
 export const RouterComponent = () => {
 
-    const [myself, setMyself] = useState(undefined);
+    const [currentUser, setCurrentUser] = useState(undefined);
+
     const [error, setError] = useState(null);
 
     useEffect(() => {
         whoAmI().then((data) => {
-            setMyself(data);
-            console.log('myself: -> ', myself);
+            setCurrentUser(data);
+            console.log('myself: -> ', currentUser);
         }).catch((e) => {
             setError(e);
         })
@@ -49,12 +51,19 @@ export const RouterComponent = () => {
         )
     );
 
+    function userLogin(data: any) {
+        setCurrentUser(data);
+    }
+
     return (
         <> {error ? <ErrorComponent error={error as any} /> :
-            myself === undefined
-                ? <div>{typeof myself} Loading...</div>
+            currentUser === undefined
+                ? <div>{typeof currentUser} Loading...</div>
                 : <>
-                    <UserContext.Provider value={myself}>
+                    <UserContext.Provider value={{
+                        currentUser,
+                        userLogin
+                    }}>
                         <RouterProvider router={router} />
                     </UserContext.Provider>
                 </>}

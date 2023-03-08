@@ -7,6 +7,7 @@ import { UserContext } from "../../../../context/UserContext";
 
 export const WarehouseItems = () => {
     const [items, setItems] = useState([]);
+    const { currentUser } = useContext(UserContext);
     const navigate = useNavigate();
     useEffect(() => {
 
@@ -25,10 +26,12 @@ export const WarehouseItems = () => {
         await deleteProduct(id);
         setItems(items.filter((item: any) => item._id !== id));
     }
+    console.log(currentUser);
 
     return (
 
         <>
+            {/* <h1>{currentUser}</h1> */}
             <Container sx={{ display: 'flex', justifyContent: 'center' }}>
                 <Button onClick={() => navigate('/products/add')} component={RouterLink} to="/products/add" variant="contained">Add new product</Button>
             </Container>

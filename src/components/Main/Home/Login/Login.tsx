@@ -3,32 +3,43 @@ import { login } from "../../../../utils/user-requets";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { UserContext } from "../../../../context/UserContext";
 import { useContext } from "react";
+import { useNavigate } from "react-router-dom";
 
 
 export const Login = () => {
 
-    const user = useContext(UserContext);
+    const { currentUser, userLogin } = useContext(UserContext);
+
+    const navigate = useNavigate();
 
     const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
         event.preventDefault();
         const data = new FormData(event.currentTarget);
 
         try {
+            //TODO: schema!
             await login({ username: data.get("username") as string, password: data.get("password") as string });
             alert("Logged in");
+            // console.log(data.get("username"));
+            userLogin({ username: data.get("username") as string });
+
+            // Does not happen in time:
+            // console.log(currentUser);
         } catch (e: any) {
             if (e.response.status === 401) {
                 alert("Invalid credentials");
             } else {
+                console.log(e.response.status);
+
                 alert("Unhandled error");
             }
         }
-
 
     };
 
     return (
         <Container sx={{ height: 1 }}>
+            <h2>{currentUser}</h2>
             <CssBaseline />
             <Box
                 sx={{
