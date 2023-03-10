@@ -19,7 +19,6 @@ export const Login = () => {
         const formData = new FormData(event.currentTarget);
 
         try {
-            //TODO: schema!
             const data = {
                 username: formData.get("username") as string,
                 password: formData.get("password") as string,

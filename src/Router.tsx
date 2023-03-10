@@ -1,15 +1,14 @@
-import { createBrowserRouter, createRoutesFromElements, Route, RouterProvider, useNavigate } from "react-router-dom";
+import { createBrowserRouter, createRoutesFromElements, Navigate, Outlet, Route, RouterProvider } from "react-router-dom";
 import { Register } from "./components/Main/Register/Register";
 import { getProductById } from "./utils/product-requests";
 import Home from "./components/Main/Home/Home";
 import { Edit } from "./components/Main/Edit/Edit";
 import Add from "./components/Main/Add/Add";
 import { Root } from "./Root";
-import { createContext, useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { Error as ErrorComponent } from "./components/Error/Error";
 import { whoAmI } from "./utils/user-requets";
 import { UserContext } from "./context/UserContext";
-import { Logout } from "./components/Main/Logout/Logout";
 
 //? on login -> set user in https://redux.js.org/api/store || use context because 
 // make Router component, with the router provider and the router, and in it: determine the user routes and anonymous routes,
@@ -29,23 +28,44 @@ export const RouterComponent = () => {
         }).catch((e) => {
             setError(e);
         })
-    }, [])
+    }, []);
+
+    const PrivateRoutes = () => {
+        const { currentUser } = useContext(UserContext);
+        if (currentUser) {
+            return <Outlet />
+        } else {
+            return <Navigate to="/" />
+        }
+    }
+    const PublicRoutes = () => {
+        const { currentUser } = useContext(UserContext);
+        if (currentUser) {
+            return <Navigate to="/" />
+        } else {
+            return <Outlet />
+        }
+    }
 
     const router = createBrowserRouter(
         createRoutesFromElements(
             <Route path="/" element={<Root />}>
                 <Route index element={<Home />} />
-                <Route path="/register" element={<Register />} />
-                <Route path="/edit/:productId" element={<Edit />}
-                    loader={async ({ params }) => {
-                        const product = await getProductById(params.productId as any);
-                        if (product) {
-                            return product;
-                        } else {
-                            throw new Error("Product not found");
-                        }
-                    }} errorElement={<div>Product not found</div>} />
-                <Route path="/products/add" element={<Add />} />
+                <Route element={<PublicRoutes />}>
+                    <Route path="/register" element={<Register />} />
+                </Route>
+                <Route element={<PrivateRoutes />}>
+                    <Route path="/products/add" element={<Add />} />
+                    <Route path="/edit/:productId" element={<Edit />}
+                        loader={async ({ params }) => {
+                            const product = await getProductById(params.productId as any);
+                            if (product) {
+                                return product;
+                            } else {
+                                throw new Error("Product not found");
+                            }
+                        }} errorElement={<div>Product not found</div>} />
+                </Route>
             </Route>
 
         )
