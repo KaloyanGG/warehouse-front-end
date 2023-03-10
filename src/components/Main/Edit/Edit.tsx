@@ -65,7 +65,7 @@ export function Edit() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className="edit-form" onSubmit={handleSubmit}>
             <TextField
                 label="Name"
                 value={name}

@@ -9,7 +9,7 @@ const productAddSchema = z.object({
     photo: z.string().optional(),
     buyPrice: z.number().positive("Buy price must be a positive number"),
     sellPrice: z.number().positive("Sell price must be a positive number"),
-    count: z.number().positive("Count must be a positive number"),
+    count: z.number().min(0, "Count must be a positive number or 0"),
     type: z.enum(['Хранителни стоки', 'Канцеларски материали', 'Строителни материали'])
 }).strict();
 

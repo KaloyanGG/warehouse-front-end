@@ -114,7 +114,6 @@ export default function Add() {
                 <Select
                     value={type}
                     onChange={(event) => setType(event.target.value as any)}
-                    className='selectEmpty'
                 >
                     <MenuItem value="" disabled>
                         Select a type

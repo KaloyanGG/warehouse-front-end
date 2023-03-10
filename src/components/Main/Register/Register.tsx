@@ -47,7 +47,7 @@ export function Register() {
     };
 
     return (
-        <form onSubmit={handleSubmit}>
+        <form className='register-form' onSubmit={handleSubmit}>
             <Typography variant="h4">Register</Typography>
             <TextField
                 name='username'
