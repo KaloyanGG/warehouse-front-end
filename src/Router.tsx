@@ -9,6 +9,7 @@ import { useContext, useEffect, useState } from "react";
 import { Error as ErrorComponent } from "./components/Error/Error";
 import { whoAmI } from "./utils/user-requets";
 import { UserContext } from "./context/UserContext";
+import { LastSearchContext } from "./context/LastSearchContext";
 
 //? on login -> set user in https://redux.js.org/api/store || use context because 
 // make Router component, with the router provider and the router, and in it: determine the user routes and anonymous routes,
@@ -18,13 +19,17 @@ import { UserContext } from "./context/UserContext";
 export const RouterComponent = () => {
 
     const [currentUser, setCurrentUser] = useState(undefined);
+    const [lastSearch, setLastSearch] = useState({
+        name: "",
+        id: "",
+        type: "Всички"
+    });
 
     const [error, setError] = useState(null);
 
     useEffect(() => {
         whoAmI().then((data) => {
             setCurrentUser(data);
-            console.log('myself: -> ', currentUser);
         }).catch((e) => {
             setError(e);
         })
@@ -79,19 +84,24 @@ export const RouterComponent = () => {
     }
 
     return (
-        <> {error ? <ErrorComponent error={error as any} /> :
-            currentUser === undefined
-                ? <div>{typeof currentUser} Loading...</div>
-                : <>
-                    <UserContext.Provider value={{
-                        currentUser,
-                        userLogin,
-                        userLogout
-                    }}>
-                        <RouterProvider router={router} />
-                    </UserContext.Provider>
-                </>}
-
+        <>
+            {error ? <ErrorComponent error={error as any} /> :
+                currentUser === undefined
+                    ? <div>{typeof currentUser} Loading...</div>
+                    : <>
+                        <LastSearchContext.Provider value={{
+                            lastSearch,
+                            setLastSearch
+                        }}>
+                            <UserContext.Provider value={{
+                                currentUser,
+                                userLogin,
+                                userLogout
+                            }}>
+                                <RouterProvider router={router} />
+                            </UserContext.Provider>
+                        </LastSearchContext.Provider>
+                    </>}
 
         </>
     );

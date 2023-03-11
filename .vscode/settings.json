@@ -18,5 +18,8 @@
         "titleBar.inactiveBackground": "#463a5899",
         "titleBar.inactiveForeground": "#e7e7e799"
     },
-    "peacock.color": "#463a58"
+    "peacock.color": "#463a58",
+    "cSpell.words": [
+        "typee"
+    ]
 }

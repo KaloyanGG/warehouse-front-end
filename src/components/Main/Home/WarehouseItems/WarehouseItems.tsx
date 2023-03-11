@@ -1,4 +1,4 @@
-import { Container, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, MenuItem, Select, FormControl, TextField, InputAdornment, IconButton } from "@mui/material";
+import { Container, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, MenuItem, Select, FormControl, TextField, InputAdornment, IconButton, SelectChangeEvent } from "@mui/material";
 import { useState, useEffect, useContext, FormEvent } from "react";
 import { getAllProducts, deleteProduct } from "../../../../utils/product-requests";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
@@ -7,23 +7,31 @@ import { types } from "../../../../enums/product-type-enum";
 import './WarehouseItems.scss';
 import { Clear } from "@mui/icons-material";
 import { text } from "stream/consumers";
+import { LastSearchContext } from "../../../../context/LastSearchContext";
 
 
 export const WarehouseItems = () => {
     const [itemsFromDb, setItemsFromDb] = useState([]);
     const [items, setItems] = useState([]);
-    const { currentUser } = useContext(UserContext);
+
+    const { lastSearch, setLastSearch } = useContext(LastSearchContext);
+    const [name, setName] = useState(lastSearch.name);
+    const [id, setId] = useState(lastSearch.id);
+
+    const [type, setType] = useState(lastSearch.type);
+    const handleChange = (event: SelectChangeEvent) => {
+        setType(event.target.value as string);
+    };
+
     const navigate = useNavigate();
     useEffect(() => {
-
         getAllProducts()
             .then((response) => {
                 setItems(response.data);
                 setItemsFromDb(response.data);
-                // console.log(items);
             })
             .catch((e) => {
-                // console.log(e);
+                console.log(e);
             })
 
     }, []);
@@ -35,67 +43,33 @@ export const WarehouseItems = () => {
             setItems(items.filter((item: any) => item._id !== id));
             setItemsFromDb(itemsFromDb.filter((item: any) => item._id !== id));
         }
-
     }
-    // function setSearchName(value: string) {
-    //     console.log(items);
-    //     setItems(items.filter((item: any) => item.name.toLowerCase().includes(value.toLowerCase())));
-    // }
-    // function setSearch(value: string) {
-    //     switch (value) {
-    //         case 'Всички':
-    //             setItems(itemsFromDb);
-    //             break;
-    //         case 'Хранителни стоки':
-    //             setItems(itemsFromDb.filter((item: any) => item.type === 'Хранителни стоки'));
-    //             console.log(items);
-    //             break;
-    //         case 'Канцеларски материали':
-    //             setItems(itemsFromDb.filter((item: any) => item.type === 'Канцеларски материали'));
-    //             console.log(items);
-
-    //             break;
-    //         case 'Строителни материали':
-    //             setItems(itemsFromDb.filter((item: any) => item.type === 'Строителни материали'));
-    //             console.log(items);
-
-    //             break;
-    //         default:
-    //             break;
-    //     }
-    // }
     function search(event: FormEvent<HTMLFormElement>) {
         event.preventDefault();
-        const formData = new FormData(event.currentTarget);
 
-        const data = {
-            name: formData.get('name') as string,
-            type: formData.get('type') as string,
-            id: formData.get('id') as string,
-        }
+        const data = { name, type, id }
+        setLastSearch(data);
         if (data.id.trim()) {
             setItems(itemsFromDb.filter((item: any) => item._id === data.id));
             return;
         }
         setItems(itemsFromDb.filter((item: any) => item.name.toLowerCase().includes(data.name.toLowerCase()) && (data.type === 'Всички' || item.type === data.type)));
 
-        console.log(data);
     }
 
-    const [text, setText] = useState('');
-    const handleClear = () => {
-        setText('');
-    };
 
     return (
 
         <>
             {/* <h1>{currentUser}</h1> */}
             <Container sx={{ display: 'flex', justifyContent: 'space-between' }}>
-                <Button sx={{ width: 0.1 }} onClick={() => navigate('/products/add')} component={RouterLink} to="/products/add" variant="contained">Add new product</Button>
+                <Button sx={{ width: 0.25 }} onClick={() => navigate('/products/add')} component={RouterLink} to="/products/add" variant="contained">Add new product</Button>
                 <form className="search-form" onSubmit={search}>
                     <FormControl sx={{ width: 0.3 }} >
                         <TextField
+                            disabled={!!id.trim()}
+                            onChange={(e) => setName(e.target.value)}
+                            defaultValue={name}
                             sx={{ height: 1, margin: 0 }}
                             type="text"
                             margin="dense"
@@ -107,6 +81,8 @@ export const WarehouseItems = () => {
                     </FormControl>
                     <FormControl sx={{ width: 0.3 }} >
                         <TextField
+                            onChange={(e) => setId(e.target.value)}
+                            defaultValue={id}
                             sx={{ height: 1, margin: 0 }}
                             type="text"
                             margin="dense"
@@ -118,18 +94,19 @@ export const WarehouseItems = () => {
                     </FormControl>
                     <FormControl sx={{ width: 0.3 }} >
                         <Select
+                            disabled={!!id.trim()}
+                            onChange={handleChange}
+                            value={type}
                             sx={{ height: 1, margin: 0 }}
-                            defaultValue='Всички'
                             className='selectEmpty'
                             id="type"
                             name="type"
                         >
-
-                            <MenuItem value="Всички" >
+                            <MenuItem value="Всички">
                                 Всички
                             </MenuItem>
-                            {types.map((type) => (
-                                <MenuItem key={type} value={type}>{type}</MenuItem>
+                            {types.map((typee) => (
+                                <MenuItem key={typee} value={typee}>{typee}</MenuItem>
                             ))}
                         </Select>
                     </FormControl>
