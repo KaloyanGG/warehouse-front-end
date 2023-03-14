@@ -81,6 +81,7 @@ export const RouterComponent = () => {
     }
     function userLogout() {
         setCurrentUser(null as any);
+        setLastSearch({ name: "", type: "Всички", id: "" });
     }
 
     return (

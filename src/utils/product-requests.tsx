@@ -31,7 +31,7 @@ async function updateProduct(product: Product) {
 
 }
 
-async function addProduct(product: Product) {
+async function addProduct(product: any) {
 
     return await fetch(baseUrl + `/products`, {
         method: "POST",

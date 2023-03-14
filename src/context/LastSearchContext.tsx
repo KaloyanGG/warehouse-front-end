@@ -10,5 +10,3 @@ export const LastSearchContext = createContext<{
     lastSearch: { name: "", type: "Всички", id: "" },
     setLastSearch: (data: any) => { }
 })
-
-//TODO: made the context now give it to the app

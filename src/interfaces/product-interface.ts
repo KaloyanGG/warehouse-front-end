@@ -3,7 +3,7 @@ interface Product {
     _id: string;
     name: string;
     description?: string;
-    photo?: string;
+    photo?: any;
     buyPrice: number;
     sellPrice: number;
     count: number;

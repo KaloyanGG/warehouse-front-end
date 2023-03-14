@@ -1,47 +1,74 @@
 import { TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Button } from '@mui/material';
-import { type } from '@testing-library/user-event/dist/type';
-import { count } from 'console';
 import './Add.scss';
 import { useState } from 'react';
-import { Product } from '../../../interfaces/product-interface';
 import { types } from '../../../enums/product-type-enum';
-import { addProduct } from '../../../utils/product-requests';
 import productAddSchema from '../../../schema/product-add.schema';
 import { ZodError } from 'zod';
 import { useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { addProduct } from '../../../utils/product-requests';
+import { toBase64 } from '../../../utils/files-utils';
+
+
 
 export default function Add() {
 
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
-    const [photo, setPhoto] = useState('');
-    const [buyPrice, setBuyPrice] = useState(0);
-    const [sellPrice, setSellPrice] = useState(0);
-    const [count, setCount] = useState(0);
+    const [photo, setPhoto] = useState("");
+    const [buyPrice, setBuyPrice] = useState('');
+    const [sellPrice, setSellPrice] = useState('');
+    const [count, setCount] = useState('');
     const [type, setType] = useState('');
     const navigate = useNavigate();
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
+        const formData = new FormData(event.currentTarget);
+        // for (const p of formData) {
+        //     console.log(p);
+        // }
+
+        if (!formData.get('count')) {
+            alert('Count is required');
+            return;
+        }
+        //todo: accept!
+
+        if ((formData.get('photo') as any).size > 0 && !['image/png', 'image/jpeg', 'image/jpg'].includes((formData.get('photo') as any).type)) {
+            alert('The photo must be a png, jpg or jpeg file');
+            return;
+        }
+
+        //todo: now make it work on the server!
+
         const data = {
-            name,
-            description,
-            photo,
-            buyPrice: Number(buyPrice),
-            sellPrice: Number(sellPrice),
-            count: Number(count),
-            type
-        } as any;
+            name: formData.get('name') as string,
+            description: formData.get('description') as string,
+            photo: (formData.get('photo') as any).size > 0
+                ? (await toBase64(formData.get('photo') as File) as string).replace('data:image/png;base64,', '')
+                : "",
+            buyPrice: Number(formData.get('buyPrice')),
+            sellPrice: Number(formData.get('sellPrice')),
+            count: Number(formData.get('count')),
+            type: formData.get('type') as string,
+        };
 
         try {
+            // console.log(formData.get('photo'));
+            // console.log(data);
+
             await productAddSchema.parseAsync(data);
             const response = await addProduct(data);
-            if (response.ok) {
-                navigate('/');
-            } else {
-                console.log(response);
-            }
+
+            //todo: clear the things, back end too, then show the photo and fix edit
+
+            // if (response.ok) {
+            //     navigate('/');
+            // } else {
+            //     console.log(response);
+            // }
 
         } catch (error: any) {
             if (error instanceof ZodError) {
@@ -53,6 +80,11 @@ export default function Add() {
 
     };
 
+    //todo: search refresh pagination
+    function handleCapture(event: any) {
+        setPhoto(event.target.files[0]);
+    }
+
     return (
         <form onSubmit={handleSubmit}>
             <TextField
@@ -61,6 +93,8 @@ export default function Add() {
                 onChange={(event) => setName(event.target.value)}
                 fullWidth
                 margin="dense"
+                name='name'
+                id='name'
             />
             <TextField
                 label="Description"
@@ -68,13 +102,18 @@ export default function Add() {
                 onChange={(event) => setDescription(event.target.value)}
                 fullWidth
                 margin="dense"
+                name='description'
+                id='description'
             />
             <TextField
-                label="Photo"
-                value={photo}
-                onChange={(event) => setPhoto(event.target.value)}
+                // value={photo}
+                // onChange={(event) => setPhoto(event.target.value)}
+                onChange={handleCapture}
                 fullWidth
                 margin="dense"
+                type='file'
+                name='photo'
+                id='photo'
             />
             <TextField
                 label="Buying Price"
@@ -86,6 +125,8 @@ export default function Add() {
                 }}
                 fullWidth
                 margin="dense"
+                name='buyPrice'
+                id='buyPrice'
             />
             <TextField
                 label="Selling Price"
@@ -97,6 +138,8 @@ export default function Add() {
                 }}
                 fullWidth
                 margin="dense"
+                name='sellPrice'
+                id='sellPrice'
             />
             <TextField
                 label="Count"
@@ -108,12 +151,16 @@ export default function Add() {
                 }}
                 fullWidth
                 margin="dense"
+                name='count'
+                id='count'
             />
             <FormControl className="form-control" fullWidth margin="dense">
                 <InputLabel>Type</InputLabel>
                 <Select
                     value={type}
                     onChange={(event) => setType(event.target.value as any)}
+                    name='type'
+                    id='type'
                 >
                     <MenuItem value="" disabled>
                         Select a type

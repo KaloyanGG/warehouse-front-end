@@ -3,7 +3,7 @@ import { login } from "../../../../utils/user-requets";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { UserContext } from "../../../../context/UserContext";
 import { useContext } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ZodError } from "zod";
 import { userLoginSchema } from "../../../../schema/user-login.schema";
 
@@ -25,21 +25,23 @@ export const Login = () => {
             };
             await userLoginSchema.parseAsync(data);
             await login(data);
-            alert("Logged in");
             userLogin({ username: data.username });
 
         } catch (e: any) {
             if (e instanceof ZodError) {
+                console.log(e.errors);
                 alert(e.errors[0].message);
             }
             else if (e.response.status === 401) {
                 alert("Invalid credentials");
             } else {
                 console.log(e.response.status);
-                alert("Unhandled error");
+                alert("Error");
             }
         }
     };
+
+    //TODO: fix nav
 
     return (
         <Container sx={{ height: 1 }}>
@@ -63,6 +65,7 @@ export const Login = () => {
                         margin="normal"
                         required
                         fullWidth
+                        type="text"
                         id="username"
                         label="Username"
                         name="username"
@@ -79,10 +82,10 @@ export const Login = () => {
                         id="password"
                         autoComplete="current-password"
                     />
-                    <FormControlLabel
+                    {/* <FormControlLabel
                         control={<Checkbox value="remember" color="primary" />}
                         label="Remember me"
-                    />
+                    /> */}
                     <Button
                         type="submit"
                         fullWidth
@@ -92,15 +95,16 @@ export const Login = () => {
                         Sign In
                     </Button>
                     <Grid container>
-                        <Grid item xs>
-                            {/* <Link href="/edit" variant="body2">
-                  Forgot password?
-                </Link> */}
-                        </Grid>
+                        {/* <Grid item xs>
+                            <Link href="/edit" variant="body2">
+                                Forgot password?
+                            </Link>
+                        </Grid> */}
                         <Grid item>
-                            {/* <Link href="#" variant="body2">
-                  {"Don't have an account? Register"}
-                </Link> */}
+                            Don't have account?
+                            <Link to="/register">
+                                {' Register'}
+                            </Link>
                         </Grid>
                     </Grid>
                 </Box>

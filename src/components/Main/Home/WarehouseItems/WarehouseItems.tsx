@@ -1,13 +1,50 @@
-import { Container, Button, TableContainer, Paper, Table, TableHead, TableRow, TableCell, TableBody, MenuItem, Select, FormControl, TextField, InputAdornment, IconButton, SelectChangeEvent } from "@mui/material";
+import { Container, Button, TableContainer, Paper, TablePagination, Table, TableFooter, TableHead, TableRow, TableCell, TableBody, MenuItem, Select, FormControl, TextField, SelectChangeEvent } from "@mui/material";
 import { useState, useEffect, useContext, FormEvent } from "react";
 import { getAllProducts, deleteProduct } from "../../../../utils/product-requests";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { UserContext } from "../../../../context/UserContext";
 import { types } from "../../../../enums/product-type-enum";
 import './WarehouseItems.scss';
-import { Clear } from "@mui/icons-material";
-import { text } from "stream/consumers";
 import { LastSearchContext } from "../../../../context/LastSearchContext";
+import { styled } from '@mui/system';
+import TablePaginationUnstyled, {
+    tablePaginationUnstyledClasses as classes,
+} from '@mui/base/TablePaginationUnstyled';
+
+const CustomTablePagination = styled(TablePaginationUnstyled)`
+  & .${classes.toolbar} {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+
+    @media (min-width: 768px) {
+      flex-direction: row;
+      align-items: center;
+    }
+  }
+
+  & .${classes.selectLabel} {
+    margin: 0;
+  }
+
+  & .${classes.displayedRows} {
+    margin: 0;
+
+    @media (min-width: 768px) {
+      margin-left: auto;
+    }
+  }
+
+  & .${classes.spacer} {
+    display: none;
+  }
+
+  & .${classes.actions} {
+    display: flex;
+    gap: 0.25rem;
+  }
+`;
+
 
 
 export const WarehouseItems = () => {
@@ -42,6 +79,7 @@ export const WarehouseItems = () => {
             await deleteProduct(id);
             setItems(items.filter((item: any) => item._id !== id));
             setItemsFromDb(itemsFromDb.filter((item: any) => item._id !== id));
+            setPage(0);
         }
     }
     function search(event: FormEvent<HTMLFormElement>) {
@@ -54,14 +92,30 @@ export const WarehouseItems = () => {
             return;
         }
         setItems(itemsFromDb.filter((item: any) => item.name.toLowerCase().includes(data.name.toLowerCase()) && (data.type === 'Всички' || item.type === data.type)));
-
     }
+    const [page, setPage] = useState(0);
+    const [rowsPerPage, setRowsPerPage] = useState(5);
+    // Avoid a layout jump when reaching the last page with empty rows.
+    const emptyRows =
+        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - items.length) : 0;
 
+    const handleChangePage = (
+        event: React.MouseEvent<HTMLButtonElement> | null,
+        newPage: number,
+    ) => {
+        setPage(newPage);
+    };
+
+    const handleChangeRowsPerPage = (
+        event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    ) => {
+        setRowsPerPage(parseInt(event.target.value, 10));
+        setPage(0);
+    };
 
     return (
 
         <>
-            {/* <h1>{currentUser}</h1> */}
             <Container sx={{ display: 'flex', justifyContent: 'space-between' }}>
                 <Button sx={{ width: 0.25 }} onClick={() => navigate('/products/add')} component={RouterLink} to="/products/add" variant="contained">Add new product</Button>
                 <form className="search-form" onSubmit={search}>
@@ -115,7 +169,7 @@ export const WarehouseItems = () => {
             </Container>
 
             <TableContainer component={Paper} sx={{ height: 440 }}>
-                <Table stickyHeader aria-label="sticky table">
+                <Table stickyHeader aria-label="sticky table" sx={{ position: 'relative' }}>
 
                     <TableHead>
                         <TableRow>
@@ -136,27 +190,59 @@ export const WarehouseItems = () => {
                             <TableRow>
                                 <TableCell colSpan={7} align='center'>Няма намерени продукти</TableCell>
                             </TableRow>
-                            : items.map((item: any) => (
-                                <TableRow key={item._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
-                                    <TableCell component="th" scope="row">{item.name}</TableCell>
-                                    <TableCell align="right">{item.count}</TableCell>
-                                    <TableCell align="right">{item.description}</TableCell>
-                                    <TableCell align="right">{item.buyPrice}</TableCell>
-                                    <TableCell align="right">{item.sellPrice}</TableCell>
-                                    <TableCell align="right">{item.type}</TableCell>
-                                    <TableCell align="right">{item._id}</TableCell>
-                                    <TableCell align='right'>
-                                        <Button variant="outlined" color="success" component={RouterLink} to={`/edit/${item._id}`}>Редактиране</Button>
-                                        <Button onClick={() => deleteHandler(item._id)} variant="outlined" color="success">Изтриване</Button>
+                            : (rowsPerPage > 0
+                                ? items.slice(page * rowsPerPage, page * rowsPerPage + rowsPerPage)
+                                : items).map((item: any) => (
+                                    <TableRow key={item._id} sx={{ '&:last-child td, &:last-child th': { border: 0 } }}>
+                                        <TableCell component="th" scope="row">{item.name}</TableCell>
+                                        <TableCell align="right">{item.count}</TableCell>
+                                        <TableCell align="right">{item.description}</TableCell>
+                                        <TableCell align="right">{item.buyPrice}</TableCell>
+                                        <TableCell align="right">{item.sellPrice}</TableCell>
+                                        <TableCell align="right">{item.type}</TableCell>
+                                        <TableCell align="right">{item._id}</TableCell>
+                                        <TableCell align='right'>
+                                            <Button variant="outlined" color="success" component={RouterLink} to={`/edit/${item._id}`}>Редактиране</Button>
+                                            <Button onClick={() => deleteHandler(item._id)} variant="outlined" color="success">Изтриване</Button>
+                                        </TableCell>
+                                    </TableRow>
+                                ))}
 
-                                    </TableCell>
-                                </TableRow>
-                            ))}
                     </TableBody>
+                    <TableFooter sx={{ position: 'sticky', zIndex: 10, bottom: 0, backgroundColor: 'red' }}>
+
+                        <TableRow>
+                            <CustomTablePagination
+                                rowsPerPageOptions={[3, 5, 7, { label: 'All', value: -1 }]}
+                                colSpan={8}
+                                align='center'
+                                count={items.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                slotProps={{
+                                    select: {
+                                        'aria-label': 'rows per page',
+                                    },
+                                    actions: {
+                                        showFirstButton: true,
+                                        showLastButton: true,
+                                    } as any,
+                                }}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                        </TableRow>
+
+                    </TableFooter>
+
 
                 </Table>
-            </TableContainer></>
+            </TableContainer>
+
+
+        </>
 
 
     )
+
 }

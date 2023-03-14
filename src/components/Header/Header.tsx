@@ -1,4 +1,4 @@
-import { useState, useEffect, useContext } from 'react';
+import { useContext } from 'react';
 import './Header.scss'
 import { Link } from 'react-router-dom';
 import { UserContext } from '../../context/UserContext';
@@ -17,8 +17,11 @@ export function Header() {
       <nav>
         <ul>
           <li><button className='nav-link'><Link to="/">Home</Link></button></li>
-          <li><button className='nav-link'><Link to="/register">Register</Link></button></li>
-          <li><button className='nav-link' onClick={logout}>Logout</button></li>
+
+          {currentUser
+            ? <li><button className='nav-link' onClick={logout}>Logout</button></li>
+            : <li><button className='nav-link'><Link to="/register">Register</Link></button></li>
+          }
           <li className='hello'><h4>Hello, {currentUser ? currentUser.username : 'guest'}</h4></li>
         </ul>
       </nav>
