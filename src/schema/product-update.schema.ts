@@ -7,7 +7,7 @@ const productUpdateSchema = z.object({
         .max(50, "Name must not be over 50 characters long").optional(),
     description: z.string()
         .max(2000, "Description must not be over 2000 characters long.").optional(),
-    photo: z.string().optional(),
+    photo: z.any().optional(),
     buyPrice: z.number().positive().optional(),
     sellPrice: z.number().positive().optional(),
     count: z.number().positive().optional(),

@@ -9,6 +9,8 @@ import { styled } from '@mui/system';
 import TablePaginationUnstyled, {
     tablePaginationUnstyledClasses as classes,
 } from '@mui/base/TablePaginationUnstyled';
+import Image from 'mui-image';
+
 
 const CustomTablePagination = styled(TablePaginationUnstyled)`
   & .${classes.toolbar} {
@@ -92,6 +94,8 @@ export const WarehouseItems = () => {
             return;
         }
         setItems(itemsFromDb.filter((item: any) => item.name.toLowerCase().includes(data.name.toLowerCase()) && (data.type === 'Всички' || item.type === data.type)));
+        //refresh the pagination
+        setPage(0);
     }
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
@@ -112,6 +116,7 @@ export const WarehouseItems = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
+    // console.log(items);
 
     return (
 
@@ -180,6 +185,8 @@ export const WarehouseItems = () => {
                             <TableCell align='right'>Sell price</TableCell>
                             <TableCell align='right'>Type</TableCell>
                             <TableCell align='right'>Id</TableCell>
+                            <TableCell align='right'>Photo</TableCell>
+                            <TableCell align='right'>Actions</TableCell>
 
                         </TableRow>
                     </TableHead>
@@ -201,6 +208,9 @@ export const WarehouseItems = () => {
                                         <TableCell align="right">{item.sellPrice}</TableCell>
                                         <TableCell align="right">{item.type}</TableCell>
                                         <TableCell align="right">{item._id}</TableCell>
+                                        <TableCell align="right">
+                                            <Image height="100%" fit="contain" duration={0} src={"data:image/png;base64," + item.photo} />
+                                        </TableCell>
                                         <TableCell align='right'>
                                             <Button variant="outlined" color="success" component={RouterLink} to={`/edit/${item._id}`}>Редактиране</Button>
                                             <Button onClick={() => deleteHandler(item._id)} variant="outlined" color="success">Изтриване</Button>
@@ -214,7 +224,7 @@ export const WarehouseItems = () => {
                         <TableRow>
                             <CustomTablePagination
                                 rowsPerPageOptions={[3, 5, 7, { label: 'All', value: -1 }]}
-                                colSpan={8}
+                                colSpan={9}
                                 align='center'
                                 count={items.length}
                                 rowsPerPage={rowsPerPage}

@@ -1,5 +1,4 @@
-import { useContext, useState } from 'react';
-import './Home.scss'
+import { useContext } from 'react';
 import { WarehouseItems } from './WarehouseItems/WarehouseItems';
 import { Login } from './Login/Login';
 import { UserContext } from '../../../context/UserContext';

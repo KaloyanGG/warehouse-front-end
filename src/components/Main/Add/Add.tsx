@@ -5,14 +5,10 @@ import { types } from '../../../enums/product-type-enum';
 import productAddSchema from '../../../schema/product-add.schema';
 import { ZodError } from 'zod';
 import { useNavigate } from 'react-router-dom';
-import axios from 'axios';
 import { addProduct } from '../../../utils/product-requests';
 import { toBase64 } from '../../../utils/files-utils';
 
-
-
 export default function Add() {
-
 
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
@@ -34,14 +30,12 @@ export default function Add() {
             alert('Count is required');
             return;
         }
-        //todo: accept!
 
         if ((formData.get('photo') as any).size > 0 && !['image/png', 'image/jpeg', 'image/jpg'].includes((formData.get('photo') as any).type)) {
             alert('The photo must be a png, jpg or jpeg file');
             return;
         }
 
-        //todo: now make it work on the server!
 
         const data = {
             name: formData.get('name') as string,
@@ -62,13 +56,15 @@ export default function Add() {
             await productAddSchema.parseAsync(data);
             const response = await addProduct(data);
 
-            //todo: clear the things, back end too, then show the photo and fix edit
+            //todo: then show the photo and fix edit
+            if (response.ok) {
 
-            // if (response.ok) {
-            //     navigate('/');
-            // } else {
-            //     console.log(response);
-            // }
+                navigate('/');
+            } else if (response.status === 409) {
+                alert('Product already exists');
+            } else {
+                console.log(response);
+            }
 
         } catch (error: any) {
             if (error instanceof ZodError) {
@@ -80,7 +76,6 @@ export default function Add() {
 
     };
 
-    //todo: search refresh pagination
     function handleCapture(event: any) {
         setPhoto(event.target.files[0]);
     }

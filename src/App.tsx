@@ -9,7 +9,6 @@ function App() {
   );
 }
 
-//TODO: fixx css in header?!?
 
 
 export default App;

@@ -41,11 +41,11 @@ export const Login = () => {
         }
     };
 
-    //TODO: fix nav
+
+    //todo: stack instead of box
 
     return (
         <Container sx={{ height: 1 }}>
-            <CssBaseline />
             <Box
                 sx={{
                     display: 'flex',
