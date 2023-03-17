@@ -31,6 +31,7 @@ export const RouterComponent = () => {
         whoAmI().then((data) => {
             setCurrentUser(data);
         }).catch((e) => {
+            console.log('Error: ', e);
             setError(e);
         })
     }, []);
@@ -84,6 +85,11 @@ export const RouterComponent = () => {
         setLastSearch({ name: "", type: "Всички", id: "" });
     }
 
+    // const Second = () => {
+    //     console.log('Are we here 2 times?');
+    //     return <div>Second</div>;
+    // }
+
     return (
         <>
             {error ? <ErrorComponent error={error as any} /> :
@@ -94,11 +100,13 @@ export const RouterComponent = () => {
                             lastSearch,
                             setLastSearch
                         }}>
+                            {/* the moment we update current user, this refreshes */}
                             <UserContext.Provider value={{
                                 currentUser,
                                 userLogin,
                                 userLogout
                             }}>
+                                {/* <Second /> */}
                                 <RouterProvider router={router} />
                             </UserContext.Provider>
                         </LastSearchContext.Provider>

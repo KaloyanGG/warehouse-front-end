@@ -1,15 +1,17 @@
 import { TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Button } from '@mui/material';
 import './Add.scss';
-import { useState } from 'react';
+import { useContext, useState } from 'react';
 import { types } from '../../../enums/product-type-enum';
 import productAddSchema from '../../../schema/product-add.schema';
 import { ZodError } from 'zod';
 import { useNavigate } from 'react-router-dom';
 import { addProduct } from '../../../utils/product-requests';
 import { toBase64 } from '../../../utils/files-utils';
+import { UserContext } from '../../../context/UserContext';
 
 export default function Add() {
 
+    //for the form:
     const [name, setName] = useState('');
     const [description, setDescription] = useState('');
     const [photo, setPhoto] = useState("");
@@ -17,14 +19,16 @@ export default function Add() {
     const [sellPrice, setSellPrice] = useState('');
     const [count, setCount] = useState('');
     const [type, setType] = useState('');
+
     const navigate = useNavigate();
 
+    //logging out:
+    const { userLogout } = useContext(UserContext);
+
+    //on form submit:
     const handleSubmit = async (event: any) => {
         event.preventDefault();
         const formData = new FormData(event.currentTarget);
-        // for (const p of formData) {
-        //     console.log(p);
-        // }
 
         if (!formData.get('count')) {
             alert('Count is required');
@@ -36,7 +40,7 @@ export default function Add() {
             return;
         }
 
-
+        //data for sending to the server:
         const data = {
             name: formData.get('name') as string,
             description: formData.get('description') as string,
@@ -50,20 +54,20 @@ export default function Add() {
         };
 
         try {
-            // console.log(formData.get('photo'));
-            // console.log(data);
 
             await productAddSchema.parseAsync(data);
             const response = await addProduct(data);
 
-            //todo: then show the photo and fix edit
+            //checking response status and taking action:
             if (response.ok) {
-
+                console.log('Product added successfully');
                 navigate('/');
             } else if (response.status === 409) {
                 alert('Product already exists');
-            } else {
-                console.log(response);
+            } else if (response.status === 401) {
+                //?How to stop it from 3 times happening
+                alert("Login session expired. Please login again.");
+                userLogout();
             }
 
         } catch (error: any) {
@@ -76,6 +80,7 @@ export default function Add() {
 
     };
 
+    //setting the photo from the form input type file:
     function handleCapture(event: any) {
         setPhoto(event.target.files[0]);
     }

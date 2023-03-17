@@ -2,7 +2,7 @@ import { Container, CssBaseline, Box, Avatar, Typography, TextField, FormControl
 import { login } from "../../../../utils/user-requets";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { UserContext } from "../../../../context/UserContext";
-import { useContext } from "react";
+import { useContext, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ZodError } from "zod";
 import { userLoginSchema } from "../../../../schema/user-login.schema";
@@ -10,7 +10,7 @@ import { userLoginSchema } from "../../../../schema/user-login.schema";
 
 export const Login = () => {
 
-    const { currentUser, userLogin } = useContext(UserContext);
+    const { userLogin } = useContext(UserContext);
 
     const navigate = useNavigate();
 

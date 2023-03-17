@@ -22,6 +22,8 @@ export function Header() {
             ? <li><button className='nav-link' onClick={logout}>Logout</button></li>
             : <li><button className='nav-link'><Link to="/register">Register</Link></button></li>
           }
+          <li><button className='nav-link'><Link to="/products/add">Add</Link></button></li>
+
           <li className='hello'><h4>Hello, {currentUser ? currentUser.username : 'guest'}</h4></li>
         </ul>
       </nav>

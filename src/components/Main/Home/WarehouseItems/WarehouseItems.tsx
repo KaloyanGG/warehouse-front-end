@@ -10,6 +10,7 @@ import TablePaginationUnstyled, {
     tablePaginationUnstyledClasses as classes,
 } from '@mui/base/TablePaginationUnstyled';
 import Image from 'mui-image';
+import { UserContext } from "../../../../context/UserContext";
 
 
 const CustomTablePagination = styled(TablePaginationUnstyled)`
@@ -57,17 +58,32 @@ export const WarehouseItems = () => {
     const [name, setName] = useState(lastSearch.name);
     const [id, setId] = useState(lastSearch.id);
 
+    const { currentUser, userLogout } = useContext(UserContext);
+
     const [type, setType] = useState(lastSearch.type);
     const handleChange = (event: SelectChangeEvent) => {
         setType(event.target.value as string);
     };
 
     const navigate = useNavigate();
+    //how to stop 2 times in useEffect for 2 times alerting
     useEffect(() => {
         getAllProducts()
             .then((response) => {
-                setItems(response.data);
-                setItemsFromDb(response.data);
+                if (response.status === 200) {
+                    response.json()
+                        .then((data) => {
+                            setItems(data);
+                            setItemsFromDb(data);
+                        })
+                        .catch((e) => {
+                            console.log(e);
+                        })
+                } else {
+                    console.log("current user in warehouse items: ", currentUser);
+                    alert("2. Login session expired. Please login again.");
+                    userLogout();
+                }
             })
             .catch((e) => {
                 console.log(e);
@@ -78,10 +94,15 @@ export const WarehouseItems = () => {
     const deleteHandler = async (id: any) => {
         // eslint-disable-next-line no-restricted-globals
         if (confirm("Are you sure you want to delete this product?")) {
-            await deleteProduct(id);
-            setItems(items.filter((item: any) => item._id !== id));
-            setItemsFromDb(itemsFromDb.filter((item: any) => item._id !== id));
-            setPage(0);
+            const response = await deleteProduct(id);
+            if (response.status === 200) {
+                setItems(items.filter((item: any) => item._id !== id));
+                setItemsFromDb(itemsFromDb.filter((item: any) => item._id !== id));
+                setPage(0);
+            } else {
+                alert("4. Login session expired. Please login again.");
+                userLogout();
+            }
         }
     }
     function search(event: FormEvent<HTMLFormElement>) {
@@ -100,12 +121,10 @@ export const WarehouseItems = () => {
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     // Avoid a layout jump when reaching the last page with empty rows.
-    const emptyRows =
-        page > 0 ? Math.max(0, (1 + page) * rowsPerPage - items.length) : 0;
 
     const handleChangePage = (
         event: React.MouseEvent<HTMLButtonElement> | null,
-        newPage: number,
+        newPage: number
     ) => {
         setPage(newPage);
     };
@@ -116,7 +135,7 @@ export const WarehouseItems = () => {
         setRowsPerPage(parseInt(event.target.value, 10));
         setPage(0);
     };
-    // console.log(items);
+
 
     return (
 
@@ -190,6 +209,7 @@ export const WarehouseItems = () => {
 
                         </TableRow>
                     </TableHead>
+
 
                     <TableBody>
 

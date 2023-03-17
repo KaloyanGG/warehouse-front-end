@@ -3,14 +3,15 @@ import { Product } from "../interfaces/product-interface";
 
 const baseUrl = "http://localhost:3000";
 
-function getAllProducts() {
-    return axios.get(baseUrl + "/products");
+async function getAllProducts() {
+
+    return await fetchWithToken(baseUrl + "/products", {});
+
 }
 
 async function getProductById(productId: string) {
-
     try {
-        const response = await fetch(baseUrl + `/products/${productId}`);
+        const response = await fetchWithToken(baseUrl + `/products/${productId}`, {});
         const product = await response.json();
         return product;
     } catch (error) {
@@ -21,7 +22,7 @@ async function getProductById(productId: string) {
 
 async function updateProduct(product: Product) {
 
-    return await fetch(baseUrl + `/products/${product._id}`, {
+    return await fetchWithToken(baseUrl + `/products/${product._id}`, {
         method: "PUT",
         headers: {
             "Content-Type": "application/json",
@@ -33,7 +34,7 @@ async function updateProduct(product: Product) {
 
 async function addProduct(product: any) {
 
-    return await fetch(baseUrl + `/products`, {
+    return await fetchWithToken(baseUrl + `/products`, {
         method: "POST",
         headers: {
             "Content-Type": "application/json",
@@ -44,15 +45,32 @@ async function addProduct(product: any) {
 }
 
 async function deleteProduct(productId: string) {
-
-    return await fetch(baseUrl + `/products/?id=${productId}`, {
+    const response = await fetchWithToken(baseUrl + `/products/${productId}`, {
         method: "DELETE",
         credentials: "include",
     });
 
-
+    return response;
 }
 
+async function fetchWithToken(url: string, options: RequestInit): Promise<Response> {
+    let response = await fetch(url, { ...options, credentials: "include" });
+    if (response.status === 401) {
+        const renewedToken = await renewToken();
+        if (renewedToken) {
+            response = await fetch(url, { ...options, credentials: "include" });
+        }
+    }
+    return response;
+}
+
+async function renewToken(): Promise<boolean> {
+    const response = await fetch(baseUrl + '/auth/token', {
+        method: "POST",
+        credentials: "include",
+    });
+    return response.status === 200;
+}
 
 
 

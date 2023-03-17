@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useContext, useEffect, useState } from "react";
 import { useLoaderData, useNavigate, useParams } from "react-router-dom";
 import { getProductById, updateProduct } from "../../../utils/product-requests";
 import { TextField, FormControl, InputLabel, Select, MenuItem, FormHelperText, Button, makeStyles, Container, Box, Grid } from "@mui/material";
@@ -11,6 +11,7 @@ import productUpdateSchema from "../../../schema/product-update.schema";
 import { ZodError } from "zod";
 import Image from 'mui-image';
 import { toBase64 } from "../../../utils/files-utils";
+import { UserContext } from "../../../context/UserContext";
 
 const types = Object.values(Type);
 
@@ -27,6 +28,7 @@ export function Edit() {
     const [type, setType] = useState(product.type);
 
     const navigate = useNavigate();
+    const { userLogout } = useContext(UserContext);
 
     const handleSubmit = async (event: any) => {
         event.preventDefault();
@@ -50,6 +52,10 @@ export function Edit() {
             await productUpdateSchema.parseAsync(data);
             const response = await updateProduct(data);
             switch (response.status) {
+                case 401:
+                    alert('Login session expired. Please login again');
+                    userLogout();
+                    break;
                 case 400:
                     alert('Invalid product');
                     break;
