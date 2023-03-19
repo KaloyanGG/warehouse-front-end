@@ -12,7 +12,7 @@ async function login({ username, password }: { username: string, password: strin
     });
 }
 
-async function register({ username, password, repeatPassword }: { username: string, password: string, repeatPassword: string }) {
+async function register({ username, password, repeatPassword, email }: { username: string, password: string, repeatPassword: string, email: string }) {
     // return axios.post(baseUrl + "/auth/register", { username, password, repeatPassword });
 
     return await fetch(baseUrl + "/auth/register", {
@@ -20,7 +20,7 @@ async function register({ username, password, repeatPassword }: { username: stri
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username, password, repeatPassword })
+        body: JSON.stringify({ username, password, repeatPassword, email })
     });
 
 }
@@ -49,4 +49,25 @@ async function logout() {
     });
 }
 
-export { logout, getAllUsers, login, register, whoAmI }
+async function resetPassword(password: string, token: string) {
+    return await fetch(baseUrl + "/auth/resetPassword", {
+        method: "POST",
+        credentials: "include",
+        body: JSON.stringify({ password, token }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+}
+
+async function sendEmail(email: string) {
+    return await fetch(baseUrl + "/auth/resetPasswordToken", {
+        method: "POST",
+        body: JSON.stringify({ email }),
+        headers: {
+            "Content-Type": "application/json"
+        }
+    });
+}
+
+export { sendEmail, resetPassword, logout, getAllUsers, login, register, whoAmI }

@@ -10,6 +10,7 @@ import { Error as ErrorComponent } from "./components/Error/Error";
 import { whoAmI } from "./utils/user-requets";
 import { UserContext } from "./context/UserContext";
 import { LastSearchContext } from "./context/LastSearchContext";
+import { ResetPassword } from "./components/Main/ResetPassword/ResetPassword";
 
 //? on login -> set user in https://redux.js.org/api/store || use context because 
 // make Router component, with the router provider and the router, and in it: determine the user routes and anonymous routes,
@@ -59,6 +60,7 @@ export const RouterComponent = () => {
                 <Route index element={<Home />} />
                 <Route element={<PublicRoutes />}>
                     <Route path="/register" element={<Register />} />
+                    <Route path="/resetPassword/:token" element={<ResetPassword />} />
                 </Route>
                 <Route element={<PrivateRoutes />}>
                     <Route path="/products/add" element={<Add />} />

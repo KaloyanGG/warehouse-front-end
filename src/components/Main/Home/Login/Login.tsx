@@ -1,16 +1,18 @@
-import { Container, CssBaseline, Box, Avatar, Typography, TextField, FormControlLabel, Checkbox, Button, Grid } from "@mui/material";
+import { Container, Box, Avatar, Typography, TextField, Button, Grid } from "@mui/material";
 import { login } from "../../../../utils/user-requets";
 import LockOutlinedIcon from '@mui/icons-material/LockOutlined';
 import { UserContext } from "../../../../context/UserContext";
-import { useContext, useEffect } from "react";
+import { useContext, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ZodError } from "zod";
 import { userLoginSchema } from "../../../../schema/user-login.schema";
+import { SendEmail } from "./SendEmail/SendEmail";
 
 
 export const Login = () => {
 
     const { userLogin } = useContext(UserContext);
+    const [visiblePopup, setVisiblePopup] = useState<boolean>(false);
 
     const navigate = useNavigate();
 
@@ -41,6 +43,9 @@ export const Login = () => {
         }
     };
 
+    function popup() {
+        setVisiblePopup(!visiblePopup);
+    }
 
     //todo: stack instead of box
 
@@ -95,19 +100,25 @@ export const Login = () => {
                         Sign In
                     </Button>
                     <Grid container>
-                        {/* <Grid item xs>
-                            <Link href="/edit" variant="body2">
-                                Forgot password?
-                            </Link>
-                        </Grid> */}
+                        <Grid item xs>
+                            Forgot password?{' '}
+                            <Button className='login-link' onClick={popup}>
+                                Click here
+                            </Button>
+                        </Grid>
                         <Grid item>
-                            Don't have account?
-                            <Link to="/register">
-                                {' Register'}
-                            </Link>
+                            Don't have account?{' '}
+                            <Button className='login-link'>
+                                <Link to="/register">
+                                    Register
+                                </Link>
+                            </Button>
                         </Grid>
                     </Grid>
                 </Box>
+                {visiblePopup &&
+                    <SendEmail popup={popup} />
+                }
             </Box>
         </Container>
     );
