@@ -5,10 +5,11 @@ import { register } from '../../../utils/user-requets';
 import { useNavigate } from 'react-router-dom';
 import userRegisterSchema from '../../../schema/user-register.schema';
 import { ZodError } from 'zod';
-//todo: add phone number
+import { IUser } from '../../../interfaces/user-interface';
 export function Register() {
     const [username, setUsername] = useState('');
     const [password, setPassword] = useState('');
+    const [phoneNumber, setPhoneNumber] = useState('');
     const [email, setEmail] = useState('');
     const [repeatPassword, setRepeatPassword] = useState('');
     const navigate = useNavigate();
@@ -25,7 +26,12 @@ export function Register() {
                 email: formData.get('email') as string,
                 password: formData.get('password') as string,
                 repeatPassword: formData.get('repeatPassword') as string
-            };
+            } as IUser;
+
+            if (formData.get('phoneNumber')) {
+                data.phoneNumber = formData.get('phoneNumber') as string;
+            }
+
             await userRegisterSchema.parseAsync(data);
 
             const response = await register(data);
@@ -74,7 +80,17 @@ export function Register() {
                 fullWidth={true}
                 sx={{ m: 1 }}
                 required
-                autoFocus
+            />
+            <TextField
+                name='phoneNumber'
+                type='text'
+                label="Phone number"
+                value={phoneNumber}
+                onChange={(event) => {
+                    setPhoneNumber(event.target.value);
+                }}
+                fullWidth={true}
+                sx={{ m: 1 }}
             />
             <TextField
                 name='password'

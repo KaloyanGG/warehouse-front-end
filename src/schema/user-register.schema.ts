@@ -16,7 +16,8 @@ const userRegisterSchema = z.object({
             }
             return true;
         }, 'Password must contain at least one uppercase letter, one lowercase letter, one special character (@, _, ~, |, -)'),
-    repeatPassword: z.string()
+    repeatPassword: z.string(),
+    phoneNumber: z.string().regex(/^[0-9\s\-]+$/, "Phone number must container only digits, whitespace and dashes").optional(),
 }).strict().refine((value) => {
     if (value.password !== value.repeatPassword) {
         return false;

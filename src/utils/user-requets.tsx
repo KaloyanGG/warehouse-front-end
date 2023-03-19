@@ -1,4 +1,5 @@
 import axios from "axios";
+import { IUser } from "../interfaces/user-interface";
 
 const baseUrl = "http://localhost:3000";
 
@@ -12,15 +13,14 @@ async function login({ username, password }: { username: string, password: strin
     });
 }
 
-async function register({ username, password, repeatPassword, email }: { username: string, password: string, repeatPassword: string, email: string }) {
-    // return axios.post(baseUrl + "/auth/register", { username, password, repeatPassword });
+async function register(data: IUser) {
 
     return await fetch(baseUrl + "/auth/register", {
         method: "POST",
         headers: {
             "Content-Type": "application/json"
         },
-        body: JSON.stringify({ username, password, repeatPassword, email })
+        body: JSON.stringify(data),
     });
 
 }
